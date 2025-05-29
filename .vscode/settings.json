@@ -1,0 +1,4 @@
+{
+    "java.compile.nullAnalysis.mode": "automatic",
+    "python.defaultInterpreterPath": "/opt/homebrew/opt/python@3.11/libexec/bin/python3"
+}

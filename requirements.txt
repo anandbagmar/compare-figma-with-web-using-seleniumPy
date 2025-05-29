@@ -1,0 +1,7 @@
+requests
+Pillow
+eyes-images
+eyes-selenium 
+selenium
+pandas
+openpyxl
