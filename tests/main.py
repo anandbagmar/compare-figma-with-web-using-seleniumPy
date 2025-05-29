@@ -10,7 +10,7 @@ from applitools.images import BatchInfo as images_BatchInfo
 
 # Load the Excel file
 file_path = os.path.join(
-    os.path.dirname(__file__), 'resources', 'IdeaLake_TestData.csv'
+    os.path.dirname(__file__), 'resources', 'TestData.csv'
 )
 loadFromFigma_path = os.path.join(
     os.path.dirname(__file__), 'LoadFromFigma.py'
