@@ -6,11 +6,12 @@ This project automates visual testing by comparing UI designs from **Figma** wit
 
 ## 🚀 How It Works
 
-- Reads test data from a CSV file (`tests/resources/test_data.csv`)
+- Reads test data from a CSV file (`tests/resources/test_data.csv`) for test-specific parameters
+- Loads shared credentials and config from a JSON file (`tests/resources/config.json`)
 - Loads design components from Figma using the Figma API
 - Opens the corresponding app page using Selenium
-- Uses Applitools Eyes to visually compare the two
-- Logs and prints test results with a visual link
+- Uses Applitools Eyes to visually compare the UI against the Figma design
+- Logs and prints test results with visual links
 
 ---
 
@@ -32,11 +33,14 @@ pip install -r requirements.txt
 
 ```
 compare-figma-with-web-using-seleniumPy/
-├── src/                    # Core logic and helpers
+├── src/                         # Core logic and helpers
 ├── tests/
-│   ├── main.py             # Entry point to run visual comparisons
+│   ├── main.py                  # Entry point to run visual comparisons
+│   ├── TestInBrowser.py         # Web test logic using Applitools Eyes
+│   ├── LoadFromFigma.py         # Figma API interaction
 │   └── resources/
-│       └── test_data.csv   # All test inputs (API tokens, URLs, etc.)
+│       ├── test_data.csv        # Test-specific inputs (file key, node ID, app URL, viewport)
+│       └── config.json          # Shared API tokens and server config
 ├── requirements.txt
 ```
 
@@ -44,25 +48,53 @@ compare-figma-with-web-using-seleniumPy/
 
 ## 🧪 Running the Tests
 
-Run with Python:
+Make the script executable:
+
+```bash
+chmod +x tests/main.py
+```
+
+Then run it directly:
+
+```bash
+./tests/main.py
+```
+
+Or run using Python:
 
 ```bash
 python tests/main.py
 ```
 
-Make sure the CSV at `tests/resources/test_data.csv` contains all necessary values.
+---
+
+## 📄 Config Format (`config.json`)
+
+```json
+{
+  "FIGMA_TOKEN": "figd_abc123",
+  "APPLITOOLS_API_KEY": "key_12345",
+  "APPLITOOLS_SERVER_URL": "https://eyes.applitools.com"
+}
+```
 
 ---
 
 ## 📄 CSV Format (`TestData.csv`)
 
-Your test data file must contain the following headers:
+The CSV file should include:
 
-| FIGMA_TOKEN | FIGMA_FILE_KEY | FIGMA_NODE_ID | APPLITOOLS_SERVER_URL | APPLITOOLS_API_KEY | APP_URL |
-|-------------|----------------|----------------|------------------------|--------------------|---------|
-| token123    | fileKeyABC     | 5:21           | https://eyes.applitools.com | key456        | https://your-site |
+| FIGMA_FILE_KEY | FIGMA_NODE_ID | APP_URL | VIEWPORT_SIZE |
+|----------------|----------------|---------|----------------|
+| key_987xyz     | 5-21           | https://myapp.com | 1600x800 |
 
-All values are required per row. `FIGMA_NODE_ID` supports auto-fixing `-` to `:` where needed.
+### Notes:
+- All values are required per row
+- `FIGMA_NODE_ID` is auto-transformed from `5-21` to `5:21`
+- `VIEWPORT_SIZE` is used to:
+  - Resize the browser window **before comparison**
+  - Resize the image uploaded from Figma (unless set to `"USE_SOURCE"`)
+- If `VIEWPORT_SIZE` is `"USE_SOURCE"`, the Figma image's native dimensions will be used
 
 ---
 
@@ -70,20 +102,26 @@ All values are required per row. `FIGMA_NODE_ID` supports auto-fixing `-` to `:`
 
 ```text
 🔍 Processing row 1:
-FIGMA_TOKEN         : abcd...1234
-APPLITOOLS_API_KEY  : 1234...abcd
-FIGMA_FILE_KEY      : a1b2c3
+FIGMA_FILE_KEY      : key_987xyz
 FIGMA_NODE_ID       : 5:21
-APP_URL             : https://your-site.com
+APP_URL             : https://myapp.com
+VIEWPORT_SIZE       : 1600x800
 --------------------------------------------------
 ✅ Test passed. View results at: https://eyes.applitools.com/app/batches/...
 ```
 
 ---
 
+## 🧹 Warnings Suppressed
+
+- `RemovedInMarshmallow4Warning` and Node.js experimental warnings are automatically suppressed
+- `utf-8-sig` is used to handle BOMs in CSV/JSON files
+
+---
+
 ## 🤝 Contributing
 
-Pull requests and issues are welcome. Please ensure your changes are well tested.
+Pull requests and issues are welcome. Please ensure your changes are tested.
 
 ---
 
