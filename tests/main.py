@@ -6,10 +6,15 @@ import os
 import sys
 import csv
 import uuid
-from applitools.images import BatchInfo as images_BatchInfo
 
-# Load the Excel file
-file_path = os.path.join(
+os.environ["NODE_NO_WARNINGS"] = "1"
+
+# Load the configuration.json file
+configuration_file_path = os.path.join(
+    os.path.dirname(__file__), 'resources', 'configuration.json'
+)
+# Load the csv file
+testdata_file_path = os.path.join(
     os.path.dirname(__file__), 'resources', 'TestData.csv'
 )
 loadFromFigma_path = os.path.join(
@@ -19,45 +24,58 @@ testInBrowser_path = os.path.join(
     os.path.dirname(__file__), 'TestInBrowser.py'
 )
 
+config = {}
+try:
+    with open(configuration_file_path, 'r', encoding='utf-8-sig') as f:
+        config = json.load(f)
+except FileNotFoundError:
+    print("❌ JSON file not found.")
+except json.JSONDecodeError:
+    print("❌ Invalid JSON format.")
+
+FIGMA_TOKEN = config.get('FIGMA_TOKEN')
+APPLITOOLS_SERVER_URL = config.get('APPLITOOLS_SERVER_URL')
+APPLITOOLS_API_KEY = config.get('APPLITOOLS_API_KEY')
+
 IMAGES_UUID = str(uuid.uuid4())
 IMAGES_BATCH_NAME_SUFFIX = " - Check with Figma"
 SELENIUM_UUID = str(uuid.uuid4())
 SELENIUM_BATCH_NAME_SUFFIX = " - Check against Figma"
 
-with open(file_path, newline='', encoding="utf-8-sig") as csvfile:
+def mask(value, min_length=8):
+    if not value:
+        return "❌ Missing"
+    if len(value) < min_length:
+        return "*" * len(value)
+    return f"{value[:4]}...{value[-4:]}"
+
+print(f"{'FIGMA_TOKEN':<25}: {mask(FIGMA_TOKEN)}", file=sys.stderr)
+print(f"{'APPLITOOLS_SERVER_URL':<25}: {APPLITOOLS_SERVER_URL or '❌ Missing'}", file=sys.stderr)
+print(f"{'APPLITOOLS_API_KEY':<25}: {mask(APPLITOOLS_API_KEY)}", file=sys.stderr)
+
+with open(testdata_file_path, newline='', encoding="utf-8-sig") as csvfile:
     reader = csv.DictReader(csvfile)
 
     for index, row in enumerate(reader):
-        # Extract values from the csv row
-        FIGMA_TOKEN = row['FIGMA_TOKEN']
+        # Extract values from the csv row   
         FIGMA_FILE_KEY = row['FIGMA_FILE_KEY']
         FIGMA_NODE_ID = row['FIGMA_NODE_ID']
         FIGMA_NODE_ID = FIGMA_NODE_ID.replace("-", ":")
-        APPLITOOLS_SERVER_URL = row['APPLITOOLS_SERVER_URL']
-        APPLITOOLS_API_KEY = row['APPLITOOLS_API_KEY']
         APP_URL = row['APP_URL']
-
-        def mask(value, min_length=8):
-            if not value:
-                return "❌ Missing"
-            if len(value) < min_length:
-                return "*" * len(value)
-            return f"{value[:4]}...{value[-4:]}"
+        VIEWPORT_SIZE = row['VIEWPORT_SIZE']
 
         print(f"\n🔍 Processing row {index + 1}:", file=sys.stderr)
-        print(f"{'FIGMA_TOKEN':<25}: {mask(FIGMA_TOKEN)}", file=sys.stderr)
-        print(f"{'APPLITOOLS_API_KEY':<25}: {mask(APPLITOOLS_API_KEY)}", file=sys.stderr)
         print(f"{'FIGMA_FILE_KEY':<25}: {FIGMA_FILE_KEY or '❌ Missing'}", file=sys.stderr)
         print(f"{'FIGMA_NODE_ID':<25}: {FIGMA_NODE_ID or '❌ Missing'}", file=sys.stderr)
-        print(f"{'APPLITOOLS_SERVER_URL':<25}: {APPLITOOLS_SERVER_URL or '❌ Missing'}", file=sys.stderr)
         print(f"{'APP_URL':<25}: {APP_URL or '❌ Missing'}", file=sys.stderr)
+        print(f"{'VIEWPORT_SIZE':<25}: {VIEWPORT_SIZE or '❌ Missing'}", file=sys.stderr)
         print("-" * 75, file=sys.stderr)
         print("\n", file=sys.stderr)
 
         try:
             upload_result = subprocess.run(
                 ['python3', 
-                loadFromFigma_path, FIGMA_TOKEN, FIGMA_FILE_KEY, FIGMA_NODE_ID, APPLITOOLS_SERVER_URL, APPLITOOLS_API_KEY, IMAGES_BATCH_NAME_SUFFIX, IMAGES_UUID],
+                loadFromFigma_path, FIGMA_TOKEN, FIGMA_FILE_KEY, FIGMA_NODE_ID, APPLITOOLS_SERVER_URL, APPLITOOLS_API_KEY, IMAGES_BATCH_NAME_SUFFIX, IMAGES_UUID, VIEWPORT_SIZE],
                 capture_output=True, 
                 text=True,
                 check=True
@@ -114,7 +132,7 @@ with open(file_path, newline='', encoding="utf-8-sig") as csvfile:
             print(comparison_result.stderr)
             continue
 
-        print(f"Output from TestInBrowser.py with \n\tappName={comparison_result_values['appName']}, \n\ttestName={comparison_result_values['testName']}, \n\tviewPortSize={comparison_result_values['viewPortSize']}, \n\tenvBaselineName={comparison_result_values['envBaselineName']}, \n\tAPP_URL={comparison_result_values['APP_URL']}, \n\tstatus={comparison_result_values['status']}")
+        print(f"Output from TestInBrowser.py with \n\tappName={comparison_result_values['appName']}, \n\ttestName={comparison_result_values['testName']}, \n\tviewPortSize={comparison_result_values['viewPortSize']}, \n\tbaselineEnvName={comparison_result_values['baselineEnvName']}, \n\tAPP_URL={comparison_result_values['APP_URL']}, \n\tstatus={comparison_result_values['status']}")
         print("TestInBrowser.py executed successfully.")
 
         print("=" * 80)

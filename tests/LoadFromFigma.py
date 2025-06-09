@@ -22,8 +22,9 @@ APPLITOOLS_SERVER_URL = sys.argv[4]
 APPLITOOLS_API_KEY = sys.argv[5]
 IMAGES_BATCH_NAME_SUFFIX = sys.argv[6] if len(sys.argv) > 6 else "NOT_SET"
 IMAGES_BATCH_ID = sys.argv[7] if len(sys.argv) > 7 else str(uuid.uuid4())
+VIEWPORT_SIZE = sys.argv[8]
 
-print(f"Loading file FIGMA_FILE_KEY={FIGMA_FILE_KEY} from FIGMA_NODE_ID={FIGMA_NODE_ID} and uploading to Applitools server: {APPLITOOLS_SERVER_URL}", file=sys.stderr)
+print(f"Loading file FIGMA_FILE_KEY={FIGMA_FILE_KEY} from FIGMA_NODE_ID={FIGMA_NODE_ID} and uploading to Applitools server: {APPLITOOLS_SERVER_URL} with view port: {VIEWPORT_SIZE}", file=sys.stderr)
 
 # ─── Configuration ─────────────────────────────────────────────────────────────
 file_endpoint = f"https://api.figma.com/v1/files/{FIGMA_FILE_KEY}"
@@ -47,10 +48,13 @@ resp.raise_for_status()
 node_doc = resp.json()["nodes"][FIGMA_NODE_ID]["document"]
 test_name     = node_doc.get("name", "<unnamed>")
 print(f"Test Name: {test_name}\n", file=sys.stderr)
-bbox     = node_doc["absoluteBoundingBox"]
-width, height = bbox["width"], bbox["height"]
-print(f"Node {FIGMA_NODE_ID} dimensions → width: {width}px, height: {height}px", file=sys.stderr)
+if VIEWPORT_SIZE.strip().upper() == "USE_SOURCE":
+    bbox     = node_doc["absoluteBoundingBox"]
+    width, height = bbox["width"], bbox["height"]
+else:
+    width, height = map(int, VIEWPORT_SIZE.lower().strip().split('x'))
 
+print(f"Node {FIGMA_NODE_ID} dimensions → width: {width}px, height: {height}px", file=sys.stderr)
 baselineEnvName = str(app_name) + "_" + str(test_name) + "_" + str(str(width).split('.', 1)[0])
 print(f"Basline Env Name      : {baselineEnvName}", file=sys.stderr)
 
