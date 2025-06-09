@@ -6,8 +6,8 @@ This project automates visual testing by comparing UI designs from **Figma** wit
 
 ## 🚀 How It Works
 
-- Reads test data from a CSV file (`tests/resources/test_data.csv`) for test-specific parameters
-- Loads shared credentials and config from a JSON file (`tests/resources/config.json`)
+- Reads test data from a [CSV file](tests/resources/TestData.csv) for test-specific parameters
+- Loads shared credentials and configuration from a [JSON file](tests/resources/configuration.json)
 - Loads design components from Figma using the Figma API
 - Opens the corresponding app page using Selenium
 - Uses Applitools Eyes to visually compare the UI against the Figma design
@@ -39,8 +39,8 @@ compare-figma-with-web-using-seleniumPy/
 │   ├── TestInBrowser.py         # Web test logic using Applitools Eyes
 │   ├── LoadFromFigma.py         # Figma API interaction
 │   └── resources/
-│       ├── test_data.csv        # Test-specific inputs (file key, node ID, app URL, viewport)
-│       └── config.json          # Shared API tokens and server config
+│       ├── TestData.csv        # Test-specific inputs (file key, node ID, app URL, viewport)
+│       └── configuration.json          # Shared API tokens and server config
 ├── requirements.txt
 ```
 
