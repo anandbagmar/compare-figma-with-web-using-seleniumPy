@@ -68,7 +68,7 @@ python tests/main.py
 
 ---
 
-## 📄 Config Format (`config.json`)
+## 📄 [Config Format](tests/resources/configuration.json)
 
 ```json
 {
@@ -80,7 +80,7 @@ python tests/main.py
 
 ---
 
-## 📄 CSV Format (`TestData.csv`)
+## 📄 [CSV Format](tests/resources/TestData.csv)
 
 The CSV file should include:
 
