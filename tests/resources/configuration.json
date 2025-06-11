@@ -1,5 +1,6 @@
 ﻿{
     "FIGMA_TOKEN": "figd__QCvUjlkjlk097W_sdfh09lkjsdf9sdf7sdf7sdf7sdf7sdf7sdf7",
     "APPLITOOLS_SERVER_URL": "https://eyes.applitools.com",
-    "APPLITOOLS_API_KEY": "jsdflkjdsldfk798sdf7sdf7sdf7sdf7sdf7sdf7sdf7"
+    "APPLITOOLS_API_KEY": "jsdflkjdsldfk798sdf7sdf7sdf7sdf7sdf7sdf7sdf7",
+    "HEADLESS_CHROME": true
 }
