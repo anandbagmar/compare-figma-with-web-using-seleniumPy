@@ -1,7 +1,6 @@
 import sys
 import os
 import json
-import uuid
 
 # Ensure the project root (one level above /tests) is in the module search path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -17,7 +16,7 @@ from applitools.selenium import (
 from applitools.common import BatchInfo
 from applitools.common import MatchLevel
 
-from src.utils.applitools_results_serializer import serialize_test_results
+from src.utils.ApplitoolsResultsSerializer import serialize_test_results
 
 def str_to_bool(value) -> bool:
     if isinstance(value, bool):

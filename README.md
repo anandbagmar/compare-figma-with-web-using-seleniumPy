@@ -1,3 +1,4 @@
+
 # Compare Figma with Web using Selenium + Applitools
 
 This project automates visual testing by comparing UI designs from **Figma** with the actual rendered web UI using **Selenium WebDriver** and **Applitools Visual AI**.
@@ -6,22 +7,22 @@ This project automates visual testing by comparing UI designs from **Figma** wit
 
 ## 🚀 How It Works
 
-- Reads test data from a [CSV file](tests/resources/TestData.csv) for test-specific parameters
-- Loads shared credentials and configuration from a [JSON file](tests/resources/configuration.json)
-- Loads design components from Figma using the Figma API
-- Opens the corresponding app page using Selenium
-- Uses Applitools Eyes to visually compare the UI against the Figma design
-- Logs and prints test results with visual links
+- Loads configuration values from `config.json`
+- Reads test parameters per row from `test_data.csv`
+- Fetches Figma designs via API using Figma token
+- Compares rendered browser UI against Figma image via Applitools Eyes
+- Optionally uses HEADLESS mode for execution
+- Supports setting the Applitools MatchLevel per test
 
 ---
 
 ## 🛠 Prerequisites
 
 - Python 3.8+
-- Google Chrome installed
-- ChromeDriver available in PATH
+- Google Chrome
+- ChromeDriver in PATH
 
-Install required dependencies:
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -33,16 +34,44 @@ pip install -r requirements.txt
 
 ```
 compare-figma-with-web-using-seleniumPy/
-├── src/                         # Core logic and helpers
+├── src/
+│   └── utils/
+│       └── ApplitoolsResultsSerializer.py
 ├── tests/
-│   ├── main.py                  # Entry point to run visual comparisons
-│   ├── TestInBrowser.py         # Web test logic using Applitools Eyes
-│   ├── LoadFromFigma.py         # Figma API interaction
+│   ├── Main.py                  # Orchestrates Figma-to-Web comparison
+│   ├── TestInBrowser.py         # Performs visual checks using Applitools
+│   ├── LoadFromFigma.py         # Downloads and prepares Figma images
 │   └── resources/
-│       ├── TestData.csv        # Test-specific inputs (file key, node ID, app URL, viewport)
-│       └── configuration.json          # Shared API tokens and server config
-├── requirements.txt
+│       ├── Configuration.json          # API keys, server config
+│       └── TestData.csv        # Test-specific data
 ```
+
+---
+
+## 📄 [Config Format](tests/resources/Configuration.json)
+
+```json
+{
+  "FIGMA_TOKEN": "figd_abc123",
+  "APPLITOOLS_API_KEY": "api_key_123",
+  "APPLITOOLS_SERVER_URL": "https://eyes.applitools.com",
+  "HEADLESS": "true"
+}
+```
+
+---
+
+## 📄 [Test Data Format](tests/resources/TestData.csv)
+
+| FIGMA_FILE_KEY | FIGMA_NODE_ID | APP_URL                  | VIEWPORT_SIZE | IGNORE_DISPLACEMENT | MATCH_LEVEL | SKIP |
+|----------------|---------------|--------------------------|---------------|---------------------|-------------|------|
+| key_abc        | 123:456        | https://yourapp.com     | 1600x900       | true/false | layout       |
+
+- `FIGMA_NODE_ID` uses `:` instead of `-`
+- `VIEWPORT_SIZE` = `"USE_SOURCE"` to use image's native size, or specific size - example: `1600x1250`
+- `IGNORE_DISPLACEMENT` = supports values like `true` or `false`. See [here](https://applitools.com/tutorials/concepts/best-practices/hide-displacements) for more information on Ignore Displacement
+- `MATCH_LEVEL` supports values like `"layout"`, `"strict"`, `"exact"`. See [here](https://applitools.com/tutorials/concepts/best-practices/match-levels) for more information on Applitools MatchLevel
+- `SKIP` = supports values like `true` or `false`. Value of `true` means this line will be skipped in the execution
 
 ---
 
@@ -51,77 +80,28 @@ compare-figma-with-web-using-seleniumPy/
 Make the script executable:
 
 ```bash
-chmod +x tests/main.py
+chmod +x tests/Main.py
 ```
 
 Then run it directly:
 
 ```bash
-./tests/main.py
+./tests/Main.py
 ```
 
 Or run using Python:
 
 ```bash
-python tests/main.py
+python tests/Main.py
 ```
 
 ---
 
-## 📄 [Config Format](tests/resources/configuration.json)
+## 🔇 Warnings Suppressed
 
-```json
-{
-  "FIGMA_TOKEN": "figd_abc123",
-  "APPLITOOLS_API_KEY": "key_12345",
-  "APPLITOOLS_SERVER_URL": "https://eyes.applitools.com"
-}
-```
-
----
-
-## 📄 [CSV Format](tests/resources/TestData.csv)
-
-The CSV file should include:
-
-| FIGMA_FILE_KEY | FIGMA_NODE_ID | APP_URL | VIEWPORT_SIZE |
-|----------------|----------------|---------|----------------|
-| key_987xyz     | 5-21           | https://myapp.com | 1600x800 |
-
-### Notes:
-- All values are required per row
-- `FIGMA_NODE_ID` is auto-transformed from `5-21` to `5:21`
-- `VIEWPORT_SIZE` is used to:
-  - Resize the browser window **before comparison**
-  - Resize the image uploaded from Figma (unless set to `"USE_SOURCE"`)
-- If `VIEWPORT_SIZE` is `"USE_SOURCE"`, the Figma image's native dimensions will be used
-
----
-
-## ✅ Sample Output
-
-```text
-🔍 Processing row 1:
-FIGMA_FILE_KEY      : key_987xyz
-FIGMA_NODE_ID       : 5:21
-APP_URL             : https://myapp.com
-VIEWPORT_SIZE       : 1600x800
---------------------------------------------------
-✅ Test passed. View results at: https://eyes.applitools.com/app/batches/...
-```
-
----
-
-## 🧹 Warnings Suppressed
-
-- `RemovedInMarshmallow4Warning` and Node.js experimental warnings are automatically suppressed
-- `utf-8-sig` is used to handle BOMs in CSV/JSON files
-
----
-
-## 🤝 Contributing
-
-Pull requests and issues are welcome. Please ensure your changes are tested.
+- Experimental Node warnings
+- Deprecated marshmallow context warnings
+- Handles UTF-8 BOM in CSV/JSON
 
 ---
 

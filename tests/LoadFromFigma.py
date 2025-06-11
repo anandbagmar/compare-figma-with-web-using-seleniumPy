@@ -13,7 +13,7 @@ from applitools.images import Eyes, Target
 from applitools.images import BatchInfo as images_BatchInfo
 from applitools.common.config import Configuration
 from applitools.common import RectangleSize
-from src.utils.applitools_results_serializer import serialize_test_results
+from src.utils.ApplitoolsResultsSerializer import serialize_test_results
 
 print("\n", file=sys.stderr)
 print("-" * 75, file=sys.stderr)

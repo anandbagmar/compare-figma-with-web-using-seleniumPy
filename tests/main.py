@@ -11,7 +11,7 @@ os.environ["NODE_NO_WARNINGS"] = "1"
 
 # Load the configuration.json file
 configuration_file_path = os.path.join(
-    os.path.dirname(__file__), 'resources', 'configuration.json'
+    os.path.dirname(__file__), 'resources', 'Configuration.json'
 )
 # Load the csv file
 testdata_file_path = os.path.join(
