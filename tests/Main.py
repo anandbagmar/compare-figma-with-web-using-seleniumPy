@@ -11,7 +11,7 @@ os.environ["NODE_NO_WARNINGS"] = "1"
 
 # Load the configuration.json file
 configuration_file_path = os.path.join(
-    os.path.dirname(__file__), 'resources', 'Configuration.json'
+    os.path.dirname(__file__), 'resources', 'Config.json'
 )
 # Load the csv file
 testdata_file_path = os.path.join(
@@ -150,5 +150,4 @@ with open(testdata_file_path, newline='', encoding="utf-8-sig") as csvfile:
             print(f"Output from TestInBrowser.py with \n\tappName={comparison_result_values['appName']}, \n\ttestName={comparison_result_values['testName']}, \n\tviewPortSize={comparison_result_values['viewPortSize']}, \n\tbaselineEnvName={comparison_result_values['baselineEnvName']}, \n\tAPP_URL={comparison_result_values['APP_URL']}, \n\tstatus={comparison_result_values['status']}")
             print("TestInBrowser.py executed successfully.")
 
-        print("=" * 80)
         print("\n" + "=" * 80 + "\n")

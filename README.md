@@ -42,13 +42,13 @@ compare-figma-with-web-using-seleniumPy/
 │   ├── TestInBrowser.py         # Performs visual checks using Applitools
 │   ├── LoadFromFigma.py         # Downloads and prepares Figma images
 │   └── resources/
-│       ├── Configuration.json          # API keys, server config
+│       ├── Config.json          # API keys, server config
 │       └── TestData.csv        # Test-specific data
 ```
 
 ---
 
-## 📄 [Config Format](tests/resources/Configuration.json)
+## 📄 [Config Format](tests/resources/Config.json)
 
 ```json
 {
