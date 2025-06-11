@@ -65,7 +65,7 @@ compare-figma-with-web-using-seleniumPy/
 
 | FIGMA_FILE_KEY | FIGMA_NODE_ID | APP_URL                  | VIEWPORT_SIZE | IGNORE_DISPLACEMENT | MATCH_LEVEL | SKIP |
 |----------------|---------------|--------------------------|---------------|---------------------|-------------|------|
-| key_abc        | 123:456        | https://yourapp.com     | 1600x900       | true/false | layout       |
+| key_abc        | 123:456        | https://yourapp.com     | 1600x900       | true/false | layout       | true/false |
 
 - `FIGMA_NODE_ID` uses `:` instead of `-`
 - `VIEWPORT_SIZE` = `"USE_SOURCE"` to use image's native size, or specific size - example: `1600x1250`
