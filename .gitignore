@@ -30,3 +30,4 @@ build/
 reports/
 *.err
 node_modules
+*.pyc
