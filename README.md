@@ -21,7 +21,7 @@ This project automates visual testing by comparing UI designs from **Figma** wit
 - Python 3.8+
 - Google Chrome
 - ChromeDriver in PATH
-- Figma key
+- [Figma key](https://github.com/Plakhota/compare-figma-with-web-using-seleniumPy/blob/patch-1/Gow%20to%20create%20Figma%20read-only%20key.mov)
 
 Install dependencies:
 
