@@ -21,6 +21,7 @@ This project automates visual testing by comparing UI designs from **Figma** wit
 - Python 3.8+
 - Google Chrome
 - ChromeDriver in PATH
+- Figma key
 
 Install dependencies:
 
