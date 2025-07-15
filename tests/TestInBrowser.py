@@ -59,6 +59,7 @@ eyes = Eyes()
 
 config = Configuration()
 config.api_key = APPLITOOLS_API_KEY
+config.server_url = APPLITOOLS_SERVER_URL
 config.app_name = appName
 config.test_name = testName
 config.baseline_env_name = baselineEnvName

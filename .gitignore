@@ -30,4 +30,6 @@ build/
 reports/
 *.err
 node_modules
-*.pyc
+#Config files
+Config.json
+TestData.csv
