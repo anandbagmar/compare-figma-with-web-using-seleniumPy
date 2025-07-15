@@ -30,7 +30,7 @@ build/
 reports/
 *.err
 node_modules
-*.pyc
+
 .venv/
 #Config files
 Config.json
