@@ -123,7 +123,7 @@ with open(testdata_file_path, newline='', encoding="utf-8-sig") as csvfile:
             try:
                 comparison_result = subprocess.run(
                     ['python3', testInBrowser_path, 
-                    appName, testName, APPLITOOLS_API_KEY, APPLITOOLS_SERVER_URL, json.dumps(viewPortSize), baselineEnvName, 
+                    appName, testName, APPLITOOLS_SERVER_URL, APPLITOOLS_API_KEY, json.dumps(viewPortSize), baselineEnvName, 
                     APP_URL, SELENIUM_BATCH_NAME_SUFFIX, SELENIUM_UUID, HEADLESS, IGNORE_DISPLACEMENT, MATCH_LEVEL],
                     capture_output=True, 
                     text=True, 

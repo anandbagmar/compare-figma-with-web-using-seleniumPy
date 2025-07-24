@@ -30,8 +30,8 @@ print("TestInBrowser.py - Starting script execution", file=sys.stderr)
 # Parse arguments
 appName = sys.argv[1]
 testName = sys.argv[2]
-APPLITOOLS_API_KEY = sys.argv[3]
-APPLITOOLS_SERVER_URL = sys.argv[4]
+APPLITOOLS_SERVER_URL = sys.argv[3]
+APPLITOOLS_API_KEY = sys.argv[4]
 viewPortSize = json.loads(sys.argv[5])
 baselineEnvName = sys.argv[5]
 APP_URL = sys.argv[6]
