@@ -30,15 +30,17 @@ print("TestInBrowser.py - Starting script execution", file=sys.stderr)
 # Parse arguments
 appName = sys.argv[1]
 testName = sys.argv[2]
-APPLITOOLS_API_KEY = sys.argv[3]
-viewPortSize = json.loads(sys.argv[4])
-baselineEnvName = sys.argv[5]
-APP_URL = sys.argv[6]
-SELENIUM_BATCH_NAME_SUFFIX = sys.argv[7]
-SELENIUM_BATCH_ID = sys.argv[8]
-HEADLESS = sys.argv[9].lower() == 'true'
-IGNORE_DISPLACEMENT = sys.argv[10].lower() == 'true'
-MATCH_LEVEL = sys.argv[11].strip().upper()
+APPLITOOLS_SERVER_URL = sys.argv[3]
+APPLITOOLS_API_KEY = sys.argv[4]
+viewPortSize = json.loads(sys.argv[5])
+
+baselineEnvName = sys.argv[6]
+APP_URL = sys.argv[7]
+SELENIUM_BATCH_NAME_SUFFIX = sys.argv[8]
+SELENIUM_BATCH_ID = sys.argv[9]
+HEADLESS = sys.argv[10].lower() == 'true'
+IGNORE_DISPLACEMENT = sys.argv[11].lower() == 'true'
+MATCH_LEVEL = sys.argv[12].strip().upper()
 
 print("🔍 Received Parameters", file=sys.stderr)
 print(f"{'appName':<18}: {appName}", file=sys.stderr)
@@ -59,6 +61,7 @@ eyes = Eyes()
 
 config = Configuration()
 config.api_key = APPLITOOLS_API_KEY
+config.server_url = APPLITOOLS_SERVER_URL
 config.app_name = appName
 config.test_name = testName
 config.baseline_env_name = baselineEnvName
