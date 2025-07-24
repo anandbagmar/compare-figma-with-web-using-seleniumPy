@@ -33,14 +33,14 @@ testName = sys.argv[2]
 APPLITOOLS_SERVER_URL = sys.argv[3]
 APPLITOOLS_API_KEY = sys.argv[4]
 viewPortSize = json.loads(sys.argv[5])
-baselineEnvName = sys.argv[5]
-APP_URL = sys.argv[6]
-SELENIUM_BATCH_NAME_SUFFIX = sys.argv[7]
-SELENIUM_BATCH_ID = sys.argv[8]
-HEADLESS = sys.argv[9].lower() == 'true'
-IGNORE_DISPLACEMENT = sys.argv[10].lower() == 'true'
-MATCH_LEVEL = sys.argv[11].strip().upper()
 
+baselineEnvName = sys.argv[6]
+APP_URL = sys.argv[7]
+SELENIUM_BATCH_NAME_SUFFIX = sys.argv[8]
+SELENIUM_BATCH_ID = sys.argv[9]
+HEADLESS = sys.argv[10].lower() == 'true'
+IGNORE_DISPLACEMENT = sys.argv[11].lower() == 'true'
+MATCH_LEVEL = sys.argv[12].strip().upper()
 
 print("🔍 Received Parameters", file=sys.stderr)
 print(f"{'appName':<18}: {appName}", file=sys.stderr)
