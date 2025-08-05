@@ -41,6 +41,7 @@ compare-figma-with-web-using-seleniumPy/
 ├── tests/
 │   ├── Main.py                  # Orchestrates Figma-to-Web comparison
 │   ├── TestInBrowser.py         # Performs visual checks using Applitools
+│   ├── TestAnImage.py           # Upload locally stored png files to Applitools and compare the to the relevant Figma
 │   ├── LoadFromFigma.py         # Downloads and prepares Figma images
 │   └── resources/
 │       ├── Config.json          # API keys, server config
@@ -64,9 +65,10 @@ compare-figma-with-web-using-seleniumPy/
 
 ## 📄 [Test Data Format](tests/resources/TestData.csv)
 
-| FIGMA_FILE_KEY | FIGMA_NODE_ID | APP_URL                  | VIEWPORT_SIZE | IGNORE_DISPLACEMENT | MATCH_LEVEL | SKIP |
-|----------------|---------------|--------------------------|---------------|---------------------|-------------|------|
-| key_abc        | 123:456        | https://yourapp.com     | 1600x900       | true/false | layout       | true/false |
+| FIGMA_FILE_KEY | FIGMA_NODE_ID | APP_URL                    | VIEWPORT_SIZE | IGNORE_DISPLACEMENT | MATCH_LEVEL | SKIP |
+|----------------|---------------|----------------------------|---------------|---------------------|-------------|------|
+| key_abc        | 123:456        | https://yourapp.com       | 1600x900       | true/false | layout       | true/false |
+| key_abc        | 123:789        | FULL_PATH_TO_PNG_FILE     | 1600x900       | true/false | layout       | true/false |
 
 - `FIGMA_NODE_ID` uses `:` instead of `-`
 - `VIEWPORT_SIZE` = `"USE_SOURCE"` to use image's native size, or specific size - example: `1600x1250`

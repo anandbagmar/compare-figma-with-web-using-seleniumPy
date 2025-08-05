@@ -6,6 +6,7 @@ import os
 import sys
 import csv
 import uuid
+import re
 
 os.environ["NODE_NO_WARNINGS"] = "1"
 
@@ -23,6 +24,22 @@ loadFromFigma_path = os.path.join(
 testInBrowser_path = os.path.join(
     os.path.dirname(__file__), 'TestInBrowser.py'
 )
+testAnImage_path = os.path.join(
+    os.path.dirname(__file__), 'TestAnImage.py'
+)
+
+def is_implementation_source_static_image(APP_URL):
+    # Check if APP_URL starts with 'file://', or is a local file path (absolute or relative)
+    if APP_URL.startswith('file://'):
+        return True
+    # Check for Windows absolute path (e.g., C:\ or C:/)
+    if re.match(r'^[a-zA-Z]:[\\/]', APP_URL):
+        return True
+    # Check for Unix absolute path
+    if APP_URL.startswith('/'):
+        return True
+    # Otherwise, assume it's a URL (http, https, etc.)
+    return False
 
 config = {}
 try:
@@ -119,33 +136,65 @@ with open(testdata_file_path, newline='', encoding="utf-8-sig") as csvfile:
             baselineEnvName = upload_result_values['baselineEnvName']
             uploadFromFigmaResults = upload_result_values['uploadFromFigmaResults']
 
-            # Step 2: Call TestInBrowser.py with additional parameters
-            try:
-                comparison_result = subprocess.run(
-                    ['python3', testInBrowser_path, 
-                    appName, testName, APPLITOOLS_SERVER_URL, APPLITOOLS_API_KEY, json.dumps(viewPortSize), baselineEnvName, 
-                    APP_URL, SELENIUM_BATCH_NAME_SUFFIX, SELENIUM_UUID, HEADLESS, IGNORE_DISPLACEMENT, MATCH_LEVEL],
-                    capture_output=True, 
-                    text=True, 
-                    check=True)
-                print("Output from TestInBrowser.py:", file=sys.stderr)
-                print(comparison_result.stderr)
-                print(comparison_result.stdout)
+            is_images=is_implementation_source_static_image(APP_URL)
 
-                comparison_result_values = json.loads(comparison_result.stdout.strip().splitlines()[-1])
-                print("Parsed output from TestInBrowser.py:", file=sys.stderr)
-                print(comparison_result_values)
+            if not is_images:
+                # Step 2: Call TestInBrowser.py with additional parameters
+                try:
+                    comparison_result = subprocess.run(
+                        ['python3', testInBrowser_path, 
+                        appName, testName, APPLITOOLS_SERVER_URL, APPLITOOLS_API_KEY, json.dumps(viewPortSize), baselineEnvName, 
+                        APP_URL, SELENIUM_BATCH_NAME_SUFFIX, SELENIUM_UUID, HEADLESS, IGNORE_DISPLACEMENT, MATCH_LEVEL],
+                        capture_output=True, 
+                        text=True, 
+                        check=True)
+                    print("Output from TestInBrowser.py:", file=sys.stderr)
+                    print(comparison_result.stderr)
+                    print(comparison_result.stdout)
 
-            except subprocess.CalledProcessError as e:
-                print("❌ TestInBrowser.py failed with:")
-                print("STDOUT:\n", e.stdout)
-                print("STDERR:\n", e.stderr)
-                continue
-            except json.JSONDecodeError:
-                print("❌ JSON parsing failed. Output:")
-                print(comparison_result.stdout)
-                print(comparison_result.stderr)
-                continue
+                    comparison_result_values = json.loads(comparison_result.stdout.strip().splitlines()[-1])
+                    print("Parsed output from TestInBrowser.py:", file=sys.stderr)
+                    print(comparison_result_values)
+
+                except subprocess.CalledProcessError as e:
+                    print("❌ TestInBrowser.py failed with:")
+                    print("STDOUT:\n", e.stdout)
+                    print("STDERR:\n", e.stderr)
+                    continue
+                except json.JSONDecodeError:
+                    print("❌ JSON parsing failed. Output:")
+                    print(comparison_result.stdout)
+                    print(comparison_result.stderr)
+                    continue
+
+            else:
+                # Step 2: Call TestAnImage.py with additional parameters
+                try:
+                    comparison_result = subprocess.run(
+                        ['python3', testAnImage_path, 
+                        appName, testName, APPLITOOLS_SERVER_URL, APPLITOOLS_API_KEY, json.dumps(viewPortSize), baselineEnvName, 
+                        APP_URL, SELENIUM_BATCH_NAME_SUFFIX, SELENIUM_UUID, HEADLESS, IGNORE_DISPLACEMENT, MATCH_LEVEL],
+                        capture_output=True, 
+                        text=True, 
+                        check=True)
+                    print("Output from TestAnImage.py:", file=sys.stderr)
+                    print(comparison_result.stderr)
+                    print(comparison_result.stdout)
+
+                    comparison_result_values = json.loads(comparison_result.stdout.strip().splitlines()[-1])
+                    print("Parsed output from TestAnImage.py:", file=sys.stderr)
+                    print(comparison_result_values)
+
+                except subprocess.CalledProcessError as e:
+                    print("❌ TestAnImage.py failed with:")
+                    print("STDOUT:\n", e.stdout)
+                    print("STDERR:\n", e.stderr)
+                    continue
+                except json.JSONDecodeError:
+                    print("❌ JSON parsing failed. Output:")
+                    print(comparison_result.stdout)
+                    print(comparison_result.stderr)
+                    continue
 
             print(f"Output from TestInBrowser.py with \n\tappName={comparison_result_values['appName']}, \n\ttestName={comparison_result_values['testName']}, \n\tviewPortSize={comparison_result_values['viewPortSize']}, \n\tbaselineEnvName={comparison_result_values['baselineEnvName']}, \n\tAPP_URL={comparison_result_values['APP_URL']}, \n\tstatus={comparison_result_values['status']}")
             print("TestInBrowser.py executed successfully.")

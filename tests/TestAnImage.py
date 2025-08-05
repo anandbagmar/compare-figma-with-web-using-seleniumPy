@@ -5,10 +5,7 @@ import json
 # Ensure the project root (one level above /tests) is in the module search path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.chrome.options import Options
-from applitools.selenium import (
+from applitools.images import (
     Eyes,
     Target,
     Configuration
@@ -26,7 +23,6 @@ def str_to_bool(value) -> bool:
 print("-" * 75, file=sys.stderr)
 print("\n", file=sys.stderr)
 print("TestInBrowser.py - Starting script execution", file=sys.stderr)
-print("sys.argv:", sys.argv, file=sys.stderr)
 
 # Parse arguments
 appName = sys.argv[1]
@@ -34,7 +30,6 @@ testName = sys.argv[2]
 APPLITOOLS_SERVER_URL = sys.argv[3]
 APPLITOOLS_API_KEY = sys.argv[4]
 viewPortSize = json.loads(sys.argv[5])
-
 baselineEnvName = sys.argv[6]
 APP_URL = sys.argv[7]
 SELENIUM_BATCH_NAME_SUFFIX = sys.argv[8]
@@ -51,11 +46,6 @@ print(f"{'baselineEnvName':<18}: {baselineEnvName}", file=sys.stderr)
 print(f"{'APP_URL':<18}: {APP_URL}", file=sys.stderr)
 print("-" * 50, file=sys.stderr)
 
-# ─── Configure Selenium WebDriver ──────────────────────────────────────
-chrome_options = Options()
-if (str_to_bool(HEADLESS)):
-    chrome_options.add_argument("--headless")
-driver = webdriver.Chrome(service=ChromeService(), options=chrome_options)
 
 # ─── Configure Applitools with Visual Grid ─────────────────────────────
 eyes = Eyes()
@@ -83,20 +73,14 @@ config.batch = selenium_batchInfo
 config.set_viewport_size({"width": viewPortSize['width'], "height": viewPortSize['height']})
 eyes.set_configuration(config)
 
-# ─── Run Test ──────────────────────────────────────────────────────────
-try:
-    driver.get(APP_URL)
-    eyes.open(driver=driver)
-    eyes.check("Full Window", Target.window().fully(True))
+eyes.open()
+eyes.check("Full Image", Target.image(APP_URL).fully(True))
+# ─── Get and Print Results ─────────────────────────────────────────
+all_test_results = eyes.close(False)
+applitools_result = serialize_test_results(all_test_results)
+print("📊 Status of comparison against Figma:", file=sys.stderr)
+print(json.dumps(applitools_result, indent=4), file=sys.stderr)
 
-    # ─── Get and Print Results ─────────────────────────────────────────
-    all_test_results = eyes.close(False)
-    applitools_result = serialize_test_results(all_test_results)
-    print("📊 Status of comparison against Figma:", file=sys.stderr)
-    print(json.dumps(applitools_result, indent=4), file=sys.stderr)
-finally:
-    driver.quit()
-    eyes.abort_async()
 
 # Return values in the expected format
 browser_output = {
@@ -109,3 +93,4 @@ browser_output = {
     "all_test_results": applitools_result
 }
 print(json.dumps(browser_output))
+
