@@ -35,3 +35,4 @@ node_modules
 #Config files
 Config.json
 TestData.csv
+__pycache__/
