@@ -96,8 +96,19 @@ with open(testdata_file_path, newline='', encoding="utf-8-sig") as csvfile:
     reader = csv.DictReader(csvfile)
 
     for index, row in enumerate(reader):
+        print(f"\n🔍 Processing row {index + 1}:", file=sys.stderr)
         # Extract values from the csv row   
+
         FIGMA_URL= row['FIGMA_URL']
+        APP_URL = row['APP_URL']
+        VIEWPORT_SIZE = row['VIEWPORT_SIZE']
+        IGNORE_DISPLACEMENT = row.get('IGNORE_DISPLACEMENT', 'false').strip().lower()
+        MATCH_LEVEL = row.get('MATCH_LEVEL', 'Strict').strip()
+        SKIP = row.get('SKIP', 'false').strip().lower()
+
+        print(f"{'APP_URL':<25}: {APP_URL or '❌ Missing'}", file=sys.stderr)
+        print(f"{'VIEWPORT_SIZE':<25}: {VIEWPORT_SIZE or '❌ Missing'}", file=sys.stderr)
+
         pattern = r"/design/(\w+)/.*node-id=([\w-]+)"
         match = re.search(pattern, FIGMA_URL)
         # Check if a match was found
@@ -109,23 +120,15 @@ with open(testdata_file_path, newline='', encoding="utf-8-sig") as csvfile:
             FIGMA_NODE_ID = match.group(2)
 
             print(f"Original URL: {FIGMA_URL}")
-            print(f"FIGMA_FILE_KEY: {FIGMA_FILE_KEY}")
-            print(f"FIGMA_NODE_ID: {FIGMA_NODE_ID}")
+            # print(f"FIGMA_FILE_KEY: {FIGMA_FILE_KEY}")
+            # print(f"FIGMA_NODE_ID: {FIGMA_NODE_ID}")
+            FIGMA_NODE_ID = FIGMA_NODE_ID.replace("-", ":")
+            print(f"{'FIGMA_FILE_KEY':<25}: {FIGMA_FILE_KEY or '❌ Missing'}", file=sys.stderr)
+            print(f"{'FIGMA_NODE_ID':<25}: {FIGMA_NODE_ID or '❌ Missing'}", file=sys.stderr)
         else:
-            print("Could not find the file key or node ID in the URL.")
+            print("Could not find the file key or node ID in the URL. SKIP processing this row.", file=sys.stderr)
+            SKIP = 'true'
 
-        FIGMA_NODE_ID = FIGMA_NODE_ID.replace("-", ":")
-        APP_URL = row['APP_URL']
-        VIEWPORT_SIZE = row['VIEWPORT_SIZE']
-        IGNORE_DISPLACEMENT = row.get('IGNORE_DISPLACEMENT', 'false').strip().lower()
-        MATCH_LEVEL = row.get('MATCH_LEVEL', 'Strict').strip()
-        SKIP = row.get('SKIP', 'false').strip().lower()
-
-        print(f"\n🔍 Processing row {index + 1}:", file=sys.stderr)
-        print(f"{'FIGMA_FILE_KEY':<25}: {FIGMA_FILE_KEY or '❌ Missing'}", file=sys.stderr)
-        print(f"{'FIGMA_NODE_ID':<25}: {FIGMA_NODE_ID or '❌ Missing'}", file=sys.stderr)
-        print(f"{'APP_URL':<25}: {APP_URL or '❌ Missing'}", file=sys.stderr)
-        print(f"{'VIEWPORT_SIZE':<25}: {VIEWPORT_SIZE or '❌ Missing'}", file=sys.stderr)
         print(f"{'SKIP':<25}: {SKIP}", file=sys.stderr)
         print("-" * 75, file=sys.stderr)
         print("\n", file=sys.stderr)
