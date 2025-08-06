@@ -1,7 +1,7 @@
 
-# Compare Figma with Web using Selenium + Applitools
+# Compare Figma with Web using Selenium or with local Images + Applitools
 
-This project automates visual testing by comparing UI designs from **Figma** with the actual rendered web UI using **Selenium WebDriver** and **Applitools Visual AI**.
+This project automates visual testing by comparing UI designs from **Figma** with the actual rendered web UI using **Selenium WebDriver** or **local image files** and **Applitools Visual AI**.
 
 ---
 
