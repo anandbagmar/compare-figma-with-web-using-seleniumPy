@@ -1,4 +1,10 @@
-FIGMA_FILE_KEY,FIGMA_NODE_ID,APP_URL,VIEWPORT_SIZE,IGNORE_DISPLACEMENT,MATCH_LEVEL,SKIP
-T7CJFB0OzA9sS3zE5ZCV9C,1:37,https://google.co.il,1600x900,FALSE,STRICT,FALSE
-T7CJFB0OzA9sS3zE5ZCV9C,1:2,file:///Users/liranbarokas/Desktop/image1.png,1600x900,TRUE,STRICT,FALSE
-T7CJFB0OzA9sS3zE5ZCV9C,1:10,file:///Users/liranbarokas/Desktop/image1.png,1600x900,TRUE,Layout,FALSE
+FIGMA_URL,APP_URL,VIEWPORT_SIZE,IGNORE_DISPLACEMENT,MATCH_LEVEL,SKIP
+https://www.figma.com/design/7kPt5byFnDm1hs2Bd1FlNL/vodQA?node-id=17-4&t=bhcOww6CJTSixFfn-0,https://google.com/,1600x900,FALSE,STRICT,FALSE
+https://www.figma.com/design/7kPt5byFnDm1hs2Bd1FlNL/vodQA?node-id=17-5&t=bhcOww6CJTSixFfn-0,./tests/resources/Applitools_logo.png,1600x900,TRUE,STRICT,FALSE
+https://www.figma.com/design/7kPt5byFnDm1hs2Bd1FlNL/vodQA?node-id=7-2&t=bhcOww6CJTSixFfn-0,file:./tests/resources/Applitools_logo.png,1600x900,TRUE,STRICT,FALSE
+https://www.figma.com/design/7kPt5byFnDm1hs2Bd1FlNL/vodQA?node-id=7-2&t=bhcOww6CJTSixFfn-0,/Users/anand.bagmar/projects/applitools/POCs/compare-figma-with-web-using-seleniumPy/tests/resources/Applitools_logo.png,1600x900,TRUE,STRICT,FALSE
+https://www.figma.com/design/7kPt5byFnDm1hs2Bd1FlNL/vodQA?node-id=7-2&t=bhcOww6CJTSixFfn-0,file:/Users/anand.bagmar/projects/applitools/POCs/compare-figma-with-web-using-seleniumPy/tests/resources/Applitools_logo.png,1600x900,TRUE,STRICT,FALSE
+https://www.figma.com/design/7kPt5byFnDm1hs2Bd1FlNL/vodQA?node-id=7-2&t=bhcOww6CJTSixFfn-0,file:////Users/anand.bagmar/projects/applitools/POCs/compare-figma-with-web-using-seleniumPy/tests/resources/Applitools_logo.png,1600x900,TRUE,STRICT,FALSE
+https://www.figma.com/design/7kPt5byFnDm1hs2Bd1FlNL/vodQA?node-id=7-2&t=bhcOww6CJTSixFfn-0,./tests/resources/invalid_file.png,1600x900,TRUE,STRICT,FALSE
+https://www.figma.com/design/invalid/vodQA?node-id=17-4&t=bhcOww6CJTSixFfn-0,./tests/resources/Applitools_logo.png,1600x900,TRUE,STRICT,TRUE
+https://www.figma.com/design/invalid/vodQA?node-id=17-4&t=bhcOww6CJTSixFfn-0,./tests/resources/invalid.png,1600x900,TRUE,STRICT,TRUE

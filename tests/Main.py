@@ -7,6 +7,8 @@ import sys
 import csv
 import uuid
 import re
+from pathlib import Path
+from urllib.parse import urlparse, unquote
 
 os.environ["NODE_NO_WARNINGS"] = "1"
 
@@ -29,17 +31,36 @@ testAnImage_path = os.path.join(
 )
 
 def is_implementation_source_static_image(APP_URL):
-    # Check if APP_URL starts with 'file://', or is a local file path (absolute or relative)
-    if APP_URL.startswith('file://'):
-        return True
-    # Check for Windows absolute path (e.g., C:\ or C:/)
-    if re.match(r'^[a-zA-Z]:[\\/]', APP_URL):
-        return True
-    # Check for Unix absolute path
-    if APP_URL.startswith('/'):
-        return True
-    # Otherwise, assume it's a URL (http, https, etc.)
-    return False
+    # Check if APP_URL starts with 'https://', 'http://', then treat it as a web URL'
+    if APP_URL.startswith('http://') or APP_URL.startswith('https://'):
+        return False
+    # Otherwise, assume it's a file
+    return True
+
+def resolve_file_path_or_fail(app_url: str) -> Path:
+    """
+    Converts an app_url (which may be a file path or file:// URI) to an absolute Path.
+    Validates that the file exists.
+    
+    :param app_url: str - input path or file:// URI
+    :return: Path object with absolute path
+    :raises FileNotFoundError if file does not exist
+    """
+    # Step 1: Remove 'file:' or 'file:///' prefix if present
+    if app_url.startswith("file:"):
+        parsed = urlparse(app_url)
+        raw_path = unquote(parsed.path)
+    else:
+        raw_path = app_url
+
+    # Step 2: Convert to Path object and resolve to absolute path
+    path = Path(raw_path).expanduser().resolve()
+
+    # Step 3: Validate file exists
+    if not path.is_file():
+        raise FileNotFoundError(f"File does not exist: {path}")
+
+    return path
 
 config = {}
 try:
@@ -76,8 +97,23 @@ with open(testdata_file_path, newline='', encoding="utf-8-sig") as csvfile:
 
     for index, row in enumerate(reader):
         # Extract values from the csv row   
-        FIGMA_FILE_KEY = row['FIGMA_FILE_KEY']
-        FIGMA_NODE_ID = row['FIGMA_NODE_ID']
+        FIGMA_URL= row['FIGMA_URL']
+        pattern = r"/design/(\w+)/.*node-id=([\w-]+)"
+        match = re.search(pattern, FIGMA_URL)
+        # Check if a match was found
+        if match:
+            # match.group(1) corresponds to the first capturing group (\w+)
+            FIGMA_FILE_KEY = match.group(1)
+            
+            # match.group(2) corresponds to the second capturing group ([\w-]+)
+            FIGMA_NODE_ID = match.group(2)
+
+            print(f"Original URL: {FIGMA_URL}")
+            print(f"FIGMA_FILE_KEY: {FIGMA_FILE_KEY}")
+            print(f"FIGMA_NODE_ID: {FIGMA_NODE_ID}")
+        else:
+            print("Could not find the file key or node ID in the URL.")
+
         FIGMA_NODE_ID = FIGMA_NODE_ID.replace("-", ":")
         APP_URL = row['APP_URL']
         VIEWPORT_SIZE = row['VIEWPORT_SIZE']
@@ -170,6 +206,10 @@ with open(testdata_file_path, newline='', encoding="utf-8-sig") as csvfile:
             else:
                 # Step 2: Call TestAnImage.py with additional parameters
                 try:
+                    
+                    APP_URL = resolve_file_path_or_fail(APP_URL)
+                    print(f"Valid file at: {APP_URL}")
+
                     comparison_result = subprocess.run(
                         ['python3', testAnImage_path, 
                         appName, testName, APPLITOOLS_SERVER_URL, APPLITOOLS_API_KEY, json.dumps(viewPortSize), baselineEnvName, 
@@ -184,6 +224,11 @@ with open(testdata_file_path, newline='', encoding="utf-8-sig") as csvfile:
                     comparison_result_values = json.loads(comparison_result.stdout.strip().splitlines()[-1])
                     print("Parsed output from TestAnImage.py:", file=sys.stderr)
                     print(comparison_result_values)
+
+                except FileNotFoundError as e:
+                    print("❌ TestAnImage.py failed with:")
+                    print(e)
+                    continue
 
                 except subprocess.CalledProcessError as e:
                     print("❌ TestAnImage.py failed with:")

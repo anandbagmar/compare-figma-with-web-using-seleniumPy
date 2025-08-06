@@ -54,8 +54,8 @@ compare-figma-with-web-using-seleniumPy/
 
 ```json
 {
-  "FIGMA_TOKEN": "figd_abc123",
-  "APPLITOOLS_API_KEY": "api_key_123",
+  "FIGMA_TOKEN": "MY FIGMA TOKEN",
+  "APPLITOOLS_API_KEY": "MY APPLITOOLS_API_KEY",
   "APPLITOOLS_SERVER_URL": "https://eyes.applitools.com",
   "HEADLESS": "true"
 }
@@ -65,12 +65,11 @@ compare-figma-with-web-using-seleniumPy/
 
 ## 📄 [Test Data Format](tests/resources/TestData.csv)
 
-| FIGMA_FILE_KEY | FIGMA_NODE_ID | APP_URL                    | VIEWPORT_SIZE | IGNORE_DISPLACEMENT | MATCH_LEVEL | SKIP |
-|----------------|---------------|----------------------------|---------------|---------------------|-------------|------|
-| key_abc        | 123:456        | https://yourapp.com       | 1600x900       | true/false | layout       | true/false |
-| key_abc        | 123:789        | FULL_PATH_TO_PNG_FILE     | 1600x900       | true/false | layout       | true/false |
+| FIGMA_URL      | APP_URL                    | VIEWPORT_SIZE | IGNORE_DISPLACEMENT | MATCH_LEVEL | SKIP |
+|----------------|----------------------------|---------------|---------------------|-------------|------|
+| https://www.figma.com/design/myapp?node-id=17-4&t=bhcOww6CJTSixFfn-0 | https://yourapp.com       | 1600x900       | true/false | layout       | true/false |
+| https://www.figma.com/design/myapp?node-id=17-4&t=bhcOww6CJTSixFfn-0 | FULL_PATH_TO_PNG_FILE     | 1600x900       | true/false | layout       | true/false |
 
-- `FIGMA_NODE_ID` uses `:` instead of `-`
 - `VIEWPORT_SIZE` = `"USE_SOURCE"` to use image's native size, or specific size - example: `1600x1250`
 - `IGNORE_DISPLACEMENT` = supports values like `true` or `false`. See [here](https://applitools.com/tutorials/concepts/best-practices/hide-displacements) for more information on Ignore Displacement
 - `MATCH_LEVEL` supports values like `"layout"`, `"strict"`, `"exact"`. See [here](https://applitools.com/tutorials/concepts/best-practices/match-levels) for more information on Applitools MatchLevel
@@ -86,13 +85,7 @@ Make the script executable:
 chmod +x tests/Main.py
 ```
 
-Then run it directly:
-
-```bash
-./tests/Main.py
-```
-
-Or run using Python:
+Run using Python:
 
 ```bash
 python tests/Main.py

@@ -22,7 +22,7 @@ def str_to_bool(value) -> bool:
 
 print("-" * 75, file=sys.stderr)
 print("\n", file=sys.stderr)
-print("TestInBrowser.py - Starting script execution", file=sys.stderr)
+print("TestAnImage.py - Starting script execution", file=sys.stderr)
 
 # Parse arguments
 appName = sys.argv[1]
