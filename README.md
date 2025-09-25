@@ -9,10 +9,13 @@ This project automates visual testing by comparing UI designs from **Figma** wit
 
 - Loads configuration values from `config.json`
 - Reads test parameters per row from `test_data.csv`
-- Fetches Figma designs via API using Figma token
-- Compares rendered browser UI against Figma image via Applitools Eyes
-- Optionally uses HEADLESS mode for execution
-- Supports setting the Applitools MatchLevel per test
+- IF `"FIGMA_ONLY": "true"`, then
+  - Fetches Figma designs via API using Figma token and uploads to Applitools Eyes
+- ELSE IF `"FIGMA_ONLY": "false"`, then
+  - Fetches Figma designs via API using Figma token and uploads to Applitools Eyes
+  - Compares rendered browser UI against Figma image via Applitools Eyes
+  - Optionally uses HEADLESS mode for execution
+  - Supports setting the Applitools MatchLevel per test
 
 ---
 
@@ -57,7 +60,8 @@ compare-figma-with-web-using-seleniumPy/
   "FIGMA_TOKEN": "MY FIGMA TOKEN",
   "APPLITOOLS_API_KEY": "MY APPLITOOLS_API_KEY",
   "APPLITOOLS_SERVER_URL": "https://eyes.applitools.com",
-  "HEADLESS": "true"
+  "HEADLESS": "true",
+  "FIGMA_ONLY": "false"
 }
 ```
 

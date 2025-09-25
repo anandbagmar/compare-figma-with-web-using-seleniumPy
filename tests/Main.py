@@ -30,6 +30,9 @@ testAnImage_path = os.path.join(
     os.path.dirname(__file__), 'TestAnImage.py'
 )
 
+def to_bool(val) -> bool:
+    return str(val).strip().lower() in ("true", "yes", "1")
+
 def is_implementation_source_static_image(APP_URL):
     # Check if APP_URL starts with 'https://', 'http://', then treat it as a web URL'
     if APP_URL.startswith('http://') or APP_URL.startswith('https://'):
@@ -75,6 +78,7 @@ FIGMA_TOKEN = config.get('FIGMA_TOKEN')
 APPLITOOLS_SERVER_URL = config.get('APPLITOOLS_SERVER_URL')
 APPLITOOLS_API_KEY = config.get('APPLITOOLS_API_KEY')
 HEADLESS = config.get('HEADLESS', "true")
+FIGMA_ONLY = to_bool(config.get('FIGMA_ONLY', "false"))
 
 IMAGES_UUID = str(uuid.uuid4())
 IMAGES_BATCH_NAME_SUFFIX = " - Check with Figma"
@@ -105,11 +109,13 @@ with open(testdata_file_path, newline='', encoding="utf-8-sig") as csvfile:
         IGNORE_DISPLACEMENT = row.get('IGNORE_DISPLACEMENT', 'false').strip().lower()
         MATCH_LEVEL = row.get('MATCH_LEVEL', 'Strict').strip()
         SKIP = row.get('SKIP', 'false').strip().lower()
+        if FIGMA_URL.strip().startswith(('#', '//', '/*')):
+            SKIP = 'true'
 
         print(f"{'APP_URL':<25}: {APP_URL or '❌ Missing'}", file=sys.stderr)
         print(f"{'VIEWPORT_SIZE':<25}: {VIEWPORT_SIZE or '❌ Missing'}", file=sys.stderr)
 
-        pattern = r"/design/(\w+)/.*node-id=([\w-]+)"
+        pattern = r"/design/(\w+)/.*node[-_]id=([\w-]+)"
         match = re.search(pattern, FIGMA_URL)
         # Check if a match was found
         if match:
@@ -174,77 +180,81 @@ with open(testdata_file_path, newline='', encoding="utf-8-sig") as csvfile:
             viewPortSize = upload_result_values['viewPortSize']
             baselineEnvName = upload_result_values['baselineEnvName']
             uploadFromFigmaResults = upload_result_values['uploadFromFigmaResults']
+            
+            if not FIGMA_ONLY:
+                print(f"\n🚀 Starting visual validation for app '{appName}' and test '{testName}' with viewport size '{viewPortSize}' and baseline environment '{baselineEnvName}'", file=sys.stderr)
+                is_images=is_implementation_source_static_image(APP_URL)
 
-            is_images=is_implementation_source_static_image(APP_URL)
+                if not is_images:
+                    # Step 2: Call TestInBrowser.py with additional parameters
+                    try:
+                        comparison_result = subprocess.run(
+                            ['python3', testInBrowser_path, 
+                            appName, testName, APPLITOOLS_SERVER_URL, APPLITOOLS_API_KEY, json.dumps(viewPortSize), baselineEnvName, 
+                            APP_URL, SELENIUM_BATCH_NAME_SUFFIX, SELENIUM_UUID, HEADLESS, IGNORE_DISPLACEMENT, MATCH_LEVEL],
+                            capture_output=True, 
+                            text=True, 
+                            check=True)
+                        print("Output from TestInBrowser.py:", file=sys.stderr)
+                        print(comparison_result.stderr)
+                        print(comparison_result.stdout)
 
-            if not is_images:
-                # Step 2: Call TestInBrowser.py with additional parameters
-                try:
-                    comparison_result = subprocess.run(
-                        ['python3', testInBrowser_path, 
-                        appName, testName, APPLITOOLS_SERVER_URL, APPLITOOLS_API_KEY, json.dumps(viewPortSize), baselineEnvName, 
-                        APP_URL, SELENIUM_BATCH_NAME_SUFFIX, SELENIUM_UUID, HEADLESS, IGNORE_DISPLACEMENT, MATCH_LEVEL],
-                        capture_output=True, 
-                        text=True, 
-                        check=True)
-                    print("Output from TestInBrowser.py:", file=sys.stderr)
-                    print(comparison_result.stderr)
-                    print(comparison_result.stdout)
+                        comparison_result_values = json.loads(comparison_result.stdout.strip().splitlines()[-1])
+                        print("Parsed output from TestInBrowser.py:", file=sys.stderr)
+                        print(comparison_result_values)
 
-                    comparison_result_values = json.loads(comparison_result.stdout.strip().splitlines()[-1])
-                    print("Parsed output from TestInBrowser.py:", file=sys.stderr)
-                    print(comparison_result_values)
+                    except subprocess.CalledProcessError as e:
+                        print("❌ TestInBrowser.py failed with:")
+                        print("STDOUT:\n", e.stdout)
+                        print("STDERR:\n", e.stderr)
+                        continue
+                    except json.JSONDecodeError:
+                        print("❌ JSON parsing failed. Output:")
+                        print(comparison_result.stdout)
+                        print(comparison_result.stderr)
+                        continue
 
-                except subprocess.CalledProcessError as e:
-                    print("❌ TestInBrowser.py failed with:")
-                    print("STDOUT:\n", e.stdout)
-                    print("STDERR:\n", e.stderr)
-                    continue
-                except json.JSONDecodeError:
-                    print("❌ JSON parsing failed. Output:")
-                    print(comparison_result.stdout)
-                    print(comparison_result.stderr)
-                    continue
+                else:
+                    # Step 2: Call TestAnImage.py with additional parameters
+                    try:
+                        
+                        APP_URL = resolve_file_path_or_fail(APP_URL)
+                        print(f"Valid file at: {APP_URL}")
 
+                        comparison_result = subprocess.run(
+                            ['python3', testAnImage_path, 
+                            appName, testName, APPLITOOLS_SERVER_URL, APPLITOOLS_API_KEY, json.dumps(viewPortSize), baselineEnvName, 
+                            APP_URL, SELENIUM_BATCH_NAME_SUFFIX, SELENIUM_UUID, HEADLESS, IGNORE_DISPLACEMENT, MATCH_LEVEL],
+                            capture_output=True, 
+                            text=True, 
+                            check=True)
+                        print("Output from TestAnImage.py:", file=sys.stderr)
+                        print(comparison_result.stderr)
+                        print(comparison_result.stdout)
+
+                        comparison_result_values = json.loads(comparison_result.stdout.strip().splitlines()[-1])
+                        print("Parsed output from TestAnImage.py:", file=sys.stderr)
+                        print(comparison_result_values)
+
+                    except FileNotFoundError as e:
+                        print("❌ TestAnImage.py failed with:")
+                        print(e)
+                        continue
+
+                    except subprocess.CalledProcessError as e:
+                        print("❌ TestAnImage.py failed with:")
+                        print("STDOUT:\n", e.stdout)
+                        print("STDERR:\n", e.stderr)
+                        continue
+                    except json.JSONDecodeError:
+                        print("❌ JSON parsing failed. Output:")
+                        print(comparison_result.stdout)
+                        print(comparison_result.stderr)
+                        continue
+
+                print(f"Output from TestInBrowser.py with \n\tappName={comparison_result_values['appName']}, \n\ttestName={comparison_result_values['testName']}, \n\tviewPortSize={comparison_result_values['viewPortSize']}, \n\tbaselineEnvName={comparison_result_values['baselineEnvName']}, \n\tAPP_URL={comparison_result_values['APP_URL']}, \n\tstatus={comparison_result_values['status']}")
+                print("TestInBrowser.py executed successfully.")
             else:
-                # Step 2: Call TestAnImage.py with additional parameters
-                try:
-                    
-                    APP_URL = resolve_file_path_or_fail(APP_URL)
-                    print(f"Valid file at: {APP_URL}")
-
-                    comparison_result = subprocess.run(
-                        ['python3', testAnImage_path, 
-                        appName, testName, APPLITOOLS_SERVER_URL, APPLITOOLS_API_KEY, json.dumps(viewPortSize), baselineEnvName, 
-                        APP_URL, SELENIUM_BATCH_NAME_SUFFIX, SELENIUM_UUID, HEADLESS, IGNORE_DISPLACEMENT, MATCH_LEVEL],
-                        capture_output=True, 
-                        text=True, 
-                        check=True)
-                    print("Output from TestAnImage.py:", file=sys.stderr)
-                    print(comparison_result.stderr)
-                    print(comparison_result.stdout)
-
-                    comparison_result_values = json.loads(comparison_result.stdout.strip().splitlines()[-1])
-                    print("Parsed output from TestAnImage.py:", file=sys.stderr)
-                    print(comparison_result_values)
-
-                except FileNotFoundError as e:
-                    print("❌ TestAnImage.py failed with:")
-                    print(e)
-                    continue
-
-                except subprocess.CalledProcessError as e:
-                    print("❌ TestAnImage.py failed with:")
-                    print("STDOUT:\n", e.stdout)
-                    print("STDERR:\n", e.stderr)
-                    continue
-                except json.JSONDecodeError:
-                    print("❌ JSON parsing failed. Output:")
-                    print(comparison_result.stdout)
-                    print(comparison_result.stderr)
-                    continue
-
-            print(f"Output from TestInBrowser.py with \n\tappName={comparison_result_values['appName']}, \n\ttestName={comparison_result_values['testName']}, \n\tviewPortSize={comparison_result_values['viewPortSize']}, \n\tbaselineEnvName={comparison_result_values['baselineEnvName']}, \n\tAPP_URL={comparison_result_values['APP_URL']}, \n\tstatus={comparison_result_values['status']}")
-            print("TestInBrowser.py executed successfully.")
+                print("Skipping checking in browser or comparing with image because FIGMA_ONLY is set to true.", file=sys.stderr)
 
         print("\n" + "=" * 80 + "\n")

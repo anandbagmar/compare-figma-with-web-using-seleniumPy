@@ -2,5 +2,6 @@
     "FIGMA_TOKEN": "MY FIGMA TOKEN",
     "APPLITOOLS_SERVER_URL": "https://eyes.applitools.com",
     "APPLITOOLS_API_KEY": "MY APPLITOOLS API KEY",
-    "HEADLESS_CHROME": true
+    "HEADLESS_CHROME": true,
+    "FIGMA_ONLY": false
 }
