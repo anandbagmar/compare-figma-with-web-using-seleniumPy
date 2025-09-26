@@ -427,9 +427,9 @@ def run_row(row: TestRow, cfg: Config, logger: logging.Logger, dry_run: bool = F
 
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Compare Figma with Web (or local images) using Selenium + Applitools")
-    default_root = Path(__file__).resolve().parent
-    parser.add_argument("--config", default=str(default_root / "resources" / "Config.json"), help="Path to Config.json")
-    parser.add_argument("--data",   default=str(default_root / "resources" / "TestData.csv"), help="Path to TestData.csv")
+    default_root = Path(__file__).resolve().parent.parent
+    parser.add_argument("--config", default=str(default_root / "config" / "Config.json"), help="Path to Config.json")
+    parser.add_argument("--data",   default=str(default_root / "config" / "TestData.csv"), help="Path to TestData.csv")
     parser.add_argument("-v", "--verbose", action="count", default=0, help="Increase verbosity (-v)")
     parser.add_argument("--dry-run", action="store_true", help="Parse & log but do not execute any test actions")
 

@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "RunMainPy",
+            "request": "launch",
+            "mainClass": "main.java.com.eot.runner.RunMainPy",
+            "projectName": "compare-figma-with-web-using-seleniumPy_1f0a18f"
+        },
+        {
             "name": "Python Debugger: Current File",
             "request": "launch",
             "program": "${file}",

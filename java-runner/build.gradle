@@ -1,0 +1,33 @@
+plugins {
+  id 'java'
+  id 'application'
+}
+
+group = 'com.eot'
+version = '1.0.0'
+
+java {
+  toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+application {
+  mainClass = 'com.eot.runner.RunMainPy'
+}
+
+tasks.named('run') {
+  def maybeProp = { String name ->
+    if (project.hasProperty(name) && project.property(name).toString().trim()) {
+      systemProperty name, project.property(name).toString()
+    }
+  }
+  maybeProp('repoRoot')
+  maybeProp('config')
+  maybeProp('data')
+  systemProperty 'timeoutSec', (project.findProperty('timeoutSec') ?: '900').toString()
+  systemProperty 'dryRun',     (project.findProperty('dryRun')     ?: 'false').toString()
+  systemProperty 'verbose',    (project.findProperty('verbose')    ?: 'true').toString()
+}
+
+
+repositories { mavenCentral() }
+dependencies { /* none needed */ }
